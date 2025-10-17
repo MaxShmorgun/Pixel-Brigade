@@ -1,7 +1,7 @@
 import pygame
 import sys
 import easy_level
-import json # <<< НОВИЙ ІМПОРТ
+import json 
 
 pygame.init()
 pygame.mixer.init()
@@ -294,7 +294,7 @@ def draw_settings_menu():
     pygame.display.update()
     return pygame.Rect(slider_x, slider_y - 10, slider_w, 30), back_rect
 
-# <<< ЗАВАНТАЖЕННЯ ПРОГРЕСУ ПРИ СТАРТІ >>>
+
 load_progress() 
 
 # --- Основний цикл ---
