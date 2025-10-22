@@ -22,42 +22,42 @@ def easy_level():
     BLUE = (0, 150, 255)
     YELLOW = (255, 255, 0)
     DARK_GREY = (50, 50, 50)
+    HOVER = (120, 120, 255)
 
     # --- Завантаження фону ---
     try:
         background_image = pygame.image.load(os.path.join('image', 'background.png')).convert()
         background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
-    except pygame.error as e:
-        print(f"Помилка: не знайдено background.png. {e}")
+    except pygame.error:
         background_image = None
 
-    # --- Завантаження кнопки "Назад" ---
+    # --- Завантаження кнопки “Назад” ---
     try:
         arrow_image = pygame.image.load(os.path.join('image', 'back_arrow.png')).convert_alpha()
         arrow_image = pygame.transform.scale(arrow_image, (50, 50))
-    except pygame.error as e:
-        print(f"Помилка: не знайдено back_arrow.png. {e}")
+    except pygame.error:
         arrow_image = pygame.Surface((50, 50), pygame.SRCALPHA)
+        pygame.draw.polygon(arrow_image, WHITE, [(40, 5), (10, 25), (40, 45)])
+
+    button_rect = pygame.Rect(30, 30, 60, 60)
 
     # --- Завантаження літака ---
     try:
         player_image = pygame.image.load(os.path.join('image', 'player_ship.png')).convert_alpha()
         player_image = pygame.transform.scale(player_image, (80, 100))
-    except pygame.error as e:
-        print(f"Помилка: не знайдено ship.png. {e}")
+    except pygame.error:
         player_image = pygame.Surface((80, 100), pygame.SRCALPHA)
         pygame.draw.polygon(player_image, BLUE, [(40, 0), (0, 100), (80, 100)])
 
-    # --- Завантаження астероїдів ---
+    # --- Завантаження астероїда ---
     try:
         asteroid_image = pygame.image.load(os.path.join('image', 'asteroid.png')).convert_alpha()
         asteroid_image = pygame.transform.scale(asteroid_image, (80, 80))
-    except pygame.error as e:
-        print(f"Помилка: не знайдено asteroid.png. {e}")
+    except pygame.error:
         asteroid_image = pygame.Surface((80, 80), pygame.SRCALPHA)
         pygame.draw.circle(asteroid_image, (100, 100, 100), (40, 40), 40)
 
-    # --- Налаштування гравця ---
+    # --- Гравець ---
     player = pygame.Rect(WIDTH // 2 - 25, HEIGHT - 150, 80, 100)
     player_speed = 6
     lasers = []
@@ -66,7 +66,7 @@ def easy_level():
     # --- Астероїди ---
     asteroids = []
     asteroid_speed = 3
-    for i in range(8):
+    for _ in range(8):
         x = random.randint(100, WIDTH - 100)
         y = random.randint(-800, -50)
         rect = asteroid_image.get_rect(center=(x, y))
@@ -77,20 +77,25 @@ def easy_level():
     ASTEROIDS_TO_WIN = 25
     game_over = False
     victory = False
-    game_result = False
+    level_passed = False
 
-    button_rect = pygame.Rect(30, 30, 60, 60)
-
-    progress_bar_width = 400
-    progress_bar_height = 25
-    progress_bar_x = (WIDTH - progress_bar_width) // 2
-    progress_bar_y = 65
-
+    # --- Текст ---
     def draw_text(text, size, color, x, y):
         font_t = pygame.font.SysFont("timesnewroman", size, bold=True)
         text_surf = font_t.render(text, True, color)
         rect = text_surf.get_rect(center=(x, y))
         screen.blit(text_surf, rect)
+
+    # --- Кнопки ---
+    def draw_button(text, x, y, width, height):
+        mouse = pygame.mouse.get_pos()
+        rect = pygame.Rect(x, y, width, height)
+        color = DARK_GREY
+        if rect.collidepoint(mouse):
+            color = HOVER
+        pygame.draw.rect(screen, color, rect, border_radius=12)
+        draw_text(text, 32, WHITE, x + width // 2, y + height // 2)
+        return rect
 
     def reset_game():
         nonlocal asteroids, lasers, score, game_over, victory, player
@@ -99,26 +104,27 @@ def easy_level():
         game_over = False
         victory = False
         asteroids = []
-        for i in range(8):
+        for _ in range(8):
             x = random.randint(100, WIDTH - 100)
             y = random.randint(-800, -50)
             rect = asteroid_image.get_rect(center=(x, y))
             asteroids.append(rect)
         player.centerx = WIDTH // 2
 
+    # --- Головний цикл ---
     running = True
     while running:
-        # --- Фон ---
         if background_image:
             screen.blit(background_image, (0, 0))
         else:
             screen.fill((10, 10, 30))
-
-        draw_text("Довгий рівень", 28, WHITE, WIDTH // 2, 30)
-
+        
+        
+        draw_text("Легкий рівень", 28, WHITE, WIDTH // 2, 30)
         mouse_pos = pygame.mouse.get_pos()
         mouse_click = pygame.mouse.get_pressed()[0]
 
+        # --- Події ---
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -128,27 +134,19 @@ def easy_level():
                     running = False
                 if event.key == pygame.K_SPACE and not game_over and not victory:
                     lasers.append(pygame.Rect(player.centerx - 3, player.top, 6, 20))
-                if event.key == pygame.K_RETURN:
-                    if game_over:
-                        reset_game()
-                    elif victory:
-                        game_result = True
-                        running = False
 
-        # --- Кнопка в меню ---
-        if button_rect.collidepoint(mouse_pos) and mouse_click:
-            running = False
-
-        # Малювання стрілки
+        # --- Кнопка “Назад у меню” ---
         if button_rect.collidepoint(mouse_pos):
             hover_arrow = pygame.transform.scale(arrow_image, (55, 55))
             rect = hover_arrow.get_rect(center=button_rect.center)
             screen.blit(hover_arrow, rect)
+            if mouse_click:
+                running = False
         else:
             rect = arrow_image.get_rect(center=button_rect.center)
             screen.blit(arrow_image, rect)
 
-        # --- Керування ---
+        # --- Ігрова логіка ---
         if not game_over and not victory:
             keys = pygame.key.get_pressed()
             if keys[pygame.K_LEFT] and player.left > 0:
@@ -156,38 +154,36 @@ def easy_level():
             if keys[pygame.K_RIGHT] and player.right < WIDTH:
                 player.x += player_speed
 
-        # --- Рух лазерів ---
-        for laser in lasers[:]:
-            laser.y += laser_speed
-            if laser.bottom < 0:
-                lasers.remove(laser)
-
-        # --- Рух астероїдів ---
-        for asteroid in asteroids[:]:
-            asteroid.y += asteroid_speed
-            if asteroid.top > HEIGHT:
-                asteroids.remove(asteroid)
-                x = random.randint(50, WIDTH - 100)
-                y = random.randint(-600, -50)
-                rect = asteroid_image.get_rect(center=(x, y))
-                asteroids.append(rect)
-                continue
-            if asteroid.colliderect(player):
-                game_over = True
             for laser in lasers[:]:
-                if asteroid.colliderect(laser):
+                laser.y += laser_speed
+                if laser.bottom < 0:
                     lasers.remove(laser)
+
+            for asteroid in asteroids[:]:
+                asteroid.y += asteroid_speed
+                if asteroid.top > HEIGHT:
                     asteroids.remove(asteroid)
-                    score += 1
                     x = random.randint(50, WIDTH - 100)
-                    y = random.randint(-800, -50)
+                    y = random.randint(-600, -50)
                     rect = asteroid_image.get_rect(center=(x, y))
                     asteroids.append(rect)
-                    break
+                    continue
+                if asteroid.colliderect(player):
+                    game_over = True
+                for laser in lasers[:]:
+                    if asteroid.colliderect(laser):
+                        lasers.remove(laser)
+                        asteroids.remove(asteroid)
+                        score += 1
+                        x = random.randint(50, WIDTH - 100)
+                        y = random.randint(-800, -50)
+                        rect = asteroid_image.get_rect(center=(x, y))
+                        asteroids.append(rect)
+                        break
 
-        # --- Перевірка перемоги ---
-        if score >= ASTEROIDS_TO_WIN and not victory:
-            victory = True
+            if score >= ASTEROIDS_TO_WIN:
+                victory = True
+                game_over = False
 
         # --- Малювання ---
         if not game_over and not victory:
@@ -197,21 +193,46 @@ def easy_level():
             for asteroid in asteroids:
                 screen.blit(asteroid_image, asteroid)
 
-            # Прогрес-бар
+            progress_bar_width = 400
+            progress_bar_height = 25
+            progress_bar_x = (WIDTH - progress_bar_width) // 2
+            progress_bar_y = 65
             pygame.draw.rect(screen, DARK_GREY, (progress_bar_x, progress_bar_y, progress_bar_width, progress_bar_height))
             current_progress = (score / ASTEROIDS_TO_WIN) * progress_bar_width
             pygame.draw.rect(screen, GREEN, (progress_bar_x, progress_bar_y, current_progress, progress_bar_height))
             pygame.draw.rect(screen, WHITE, (progress_bar_x, progress_bar_y, progress_bar_width, progress_bar_height), 2)
             draw_text(f"Прогрес: {score}/{ASTEROIDS_TO_WIN}", 22, WHITE, WIDTH // 2, progress_bar_y + 13)
 
-        elif game_over:
-            draw_text("Ти програв!", 60, RED, WIDTH // 2, HEIGHT // 2)
-            draw_text("Натисни ENTER, щоб спробувати ще раз", 28, WHITE, WIDTH // 2, HEIGHT // 2 + 80)
-        elif victory:
-            draw_text("РІВЕНЬ ПРОЙДЕНО!", 60, GREEN, WIDTH // 2, HEIGHT // 2)
-            draw_text("Натисни ENTER, щоб вийти в меню", 28, WHITE, WIDTH // 2, HEIGHT // 2 + 80)
+        else:
+            overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+            overlay.fill((0, 0, 0, 180))
+            screen.blit(overlay, (0, 0))
+
+            if game_over:
+                draw_text("Ти програв!", 60, RED, WIDTH // 2, HEIGHT // 2 - 60)
+            elif victory:
+                draw_text("РІВЕНЬ ПРОЙДЕНО!", 60, GREEN, WIDTH // 2, HEIGHT // 2 - 60)
+
+            restart_rect = draw_button("🔁 Почати знову", WIDTH // 2 - 150, HEIGHT // 2 + 30, 300, 60)
+            menu_rect = draw_button("🏠 Вийти в меню", WIDTH // 2 - 150, HEIGHT // 2 + 110, 300, 60)
+
+            if mouse_click:
+                if restart_rect.collidepoint(mouse_pos):
+                    reset_game()
+                if menu_rect.collidepoint(mouse_pos):
+                    if victory:
+                        level_passed = True
+                    running = False
 
         pygame.display.flip()
         clock.tick(60)
 
-    return game_result
+    return level_passed
+if __name__ == "__main__":
+    pygame.init()
+    passed = easy_level()
+    if passed:
+        print("Рівень пройдено!")
+    else:
+        print("Рівень не пройдено.")
+    pygame.quit()
