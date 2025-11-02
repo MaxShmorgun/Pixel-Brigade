@@ -1,7 +1,15 @@
 import pygame
 import sys
-import easy_level # Потрібен для level_1
-import bonus_quiz_one # <--- НОВИЙ ІМПОРТ для level_2
+import easy_level
+import bonus_quiz_one
+import level_2
+import bonus_quiz_two
+import level_3
+import bonus_quiz_three
+import level_4
+import bonus_quiz_four
+import level_5
+import bonus_quiz_fife
 import json
 import os
 
@@ -268,10 +276,24 @@ def level_select_menu():
             elif key == "level_2":
                 # quiz_game.bonus_quiz повертає True, якщо score >= 10
                 level_passed = bonus_quiz_one.bonus_quiz(volume_music, volume_sfx)
-            
+
+            elif key == "level_3":
+                level_passed = level_2.hard_level(volume_music, volume_sfx) 
+            elif key == "level_4":
+                level_passed = bonus_quiz_two.bonus_quiz(volume_music, volume_sfx)
+            elif key == "level_5":
+                level_passed = level_3.hard_level(volume_music, volume_sfx)
+            elif key == "level_6":
+                level_passed = bonus_quiz_three.bonus_quiz(volume_music, volume_sfx) 
+            elif key == "level_7":
+                level_passed = level_4.hard_level(volume_music, volume_sfx)
+            elif key == "level_8":
+                level_passed = bonus_quiz_four.bonus_quiz(volume_music, volume_sfx)
+            elif key == "level_9":
+                level_passed = level_5.hard_level(volume_music, volume_sfx)       
             # 3. Заглушка для інших рівнів (щоб вони відкривалися)
-            elif key in ["level_3", "level_4", "level_5", "level_6", "level_7", "level_8", "level_9", "level_10"]:
-                print(f"Level {key} started (Placeholder). Returning success.")
+            elif key == "level_10":
+                level_passed = bonus_quiz_fife.bonus_quiz(volume_music, volume_sfx)
                 level_passed = True # Автоматично відкриваємо наступний рівень
             
             # <--- Повертаємо музику меню після виходу з рівня

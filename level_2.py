@@ -3,8 +3,7 @@ import sys
 import random
 import os
 
-# <--- Функція тепер приймає аргументи music_vol та sfx_vol
-def easy_level(music_vol, sfx_vol): 
+def hard_level(music_vol, sfx_vol): 
     # --- Ініціалізація ---
     try:
         screen = pygame.display.get_surface()
@@ -14,8 +13,6 @@ def easy_level(music_vol, sfx_vol):
         screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Pixel Brigade")
 
-    # <--- pygame.mixer.init() ВЖЕ ЗРОБЛЕНО В МЕНЮ, тому тут не потрібно
-    
     clock = pygame.time.Clock()
 
     # --- Кольори ---
@@ -60,52 +57,47 @@ def easy_level(music_vol, sfx_vol):
         asteroid_image = pygame.Surface((80, 80), pygame.SRCALPHA)
         pygame.draw.circle(asteroid_image, (100, 100, 100), (40, 40), 40)
 
-    # --- Завантаження звуків (ОНОВЛЕНО) ---
+    # --- Завантаження звуків ---
     try:
         shoot_sound = pygame.mixer.Sound(os.path.join('music', 'shoot.wav'))
-        shoot_sound.set_volume(sfx_vol)  # <--- Встановлюємо гучність
+        shoot_sound.set_volume(sfx_vol)
     except pygame.error:
-        print("Warning: 'music/shoot.wav' not found.")
         shoot_sound = None
 
     try:
         hit_sound = pygame.mixer.Sound(os.path.join('music', 'hit.mp3'))
-        hit_sound.set_volume(sfx_vol)  # <--- Встановлюємо гучність
+        hit_sound.set_volume(sfx_vol)
     except pygame.error:
-        print("Warning: 'music/hit.mp3' not found.")
         hit_sound = None
 
     try:
         win_sound = pygame.mixer.Sound(os.path.join('music', 'win.mp3'))
-        win_sound.set_volume(sfx_vol)  # <--- Встановлюємо гучність
+        win_sound.set_volume(sfx_vol)
     except pygame.error:
-        print("Warning: 'music/win.mp3' not found.")
         win_sound = None
 
     try:
         lose_sound = pygame.mixer.Sound(os.path.join('music', 'lose.wav'))
-        lose_sound.set_volume(sfx_vol)  # <--- Встановлюємо гучність
+        lose_sound.set_volume(sfx_vol)
     except pygame.error:
-        print("Warning: 'music/lose.wav' not found.")
         lose_sound = None
 
     try:
-        # Звук польоту корабля тепер використовує music_vol
         pygame.mixer.music.load(os.path.join('music', 'engine_loop.wav')) 
-        pygame.mixer.music.set_volume(music_vol)  # <--- Встановлюємо гучність
+        pygame.mixer.music.set_volume(music_vol)
     except pygame.error:
         print("Warning: 'music/engine_loop.wav' not found.")
 
     # --- Гравець ---
     player = pygame.Rect(WIDTH // 2 - 25, HEIGHT - 150, 80, 100)
-    player_speed = 6
+    player_speed = 8        # 🚀 Швидше
     lasers = []
     laser_speed = -10
 
     # --- Астероїди ---
     asteroids = []
-    asteroid_speed = 3
-    for _ in range(8):
+    asteroid_speed = 5      # 💥 Швидші
+    for _ in range(10):     # Трохи більше одночасно
         x = random.randint(100, WIDTH - 100)
         y = random.randint(-800, -50)
         rect = asteroid_image.get_rect(center=(x, y))
@@ -113,7 +105,7 @@ def easy_level(music_vol, sfx_vol):
 
     # --- Прогрес ---
     score = 0
-    ASTEROIDS_TO_WIN = 25
+    ASTEROIDS_TO_WIN = 50   # 🎯 Більше потрібно збити
     game_over = False
     victory = False
     level_passed = False
@@ -125,7 +117,6 @@ def easy_level(music_vol, sfx_vol):
         rect = text_surf.get_rect(center=(x, y))
         screen.blit(text_surf, rect)
 
-    # --- Кнопки ---
     def draw_button(text, x, y, width, height):
         mouse = pygame.mouse.get_pos()
         rect = pygame.Rect(x, y, width, height)
@@ -143,17 +134,15 @@ def easy_level(music_vol, sfx_vol):
         game_over = False
         victory = False
         asteroids = []
-        for _ in range(8):
+        for _ in range(10):
             x = random.randint(100, WIDTH - 100)
             y = random.randint(-800, -50)
             rect = asteroid_image.get_rect(center=(x, y))
             asteroids.append(rect)
         player.centerx = WIDTH // 2
-        pygame.mixer.music.play(loops=-1)  # <--- Гучність вже встановлена
+        pygame.mixer.music.play(loops=-1)
 
-    # --- Головний цикл ---
-    
-    pygame.mixer.music.play(loops=-1)  # <--- ЗАПУСК ФОНОВОГО ЗВУКУ ПОЛЬОТУ
+    pygame.mixer.music.play(loops=-1)
     
     running = True
     while running:
@@ -162,8 +151,7 @@ def easy_level(music_vol, sfx_vol):
         else:
             screen.fill((10, 10, 30))
         
-        
-        draw_text("Перший рівень", 28, WHITE, WIDTH // 2, 30)
+        draw_text("Другий рівень", 28, WHITE, WIDTH // 2, 30)
         mouse_pos = pygame.mouse.get_pos()
         mouse_click = pygame.mouse.get_pressed()[0]
 
@@ -177,10 +165,10 @@ def easy_level(music_vol, sfx_vol):
                     running = False
                 if event.key == pygame.K_SPACE and not game_over and not victory:
                     lasers.append(pygame.Rect(player.centerx - 3, player.top, 6, 20))
-                    if shoot_sound:  # <--- ВІДТВОРЕННЯ ЗВУКУ ПОСТРІЛУ
+                    if shoot_sound:
                         shoot_sound.play()
 
-        # --- Кнопка “Назад у меню” ---
+        # --- Кнопка Назад ---
         if button_rect.collidepoint(mouse_pos):
             hover_arrow = pygame.transform.scale(arrow_image, (55, 55))
             rect = hover_arrow.get_rect(center=button_rect.center)
@@ -215,8 +203,8 @@ def easy_level(music_vol, sfx_vol):
                     continue
                 if asteroid.colliderect(player):
                     game_over = True
-                    pygame.mixer.music.stop()  # <--- ЗУПИНКА ФОНОВОГО ЗВУКУ
-                    if lose_sound:  # <--- ВІДТВОРЕННЯ ЗВУКУ ПРОГРАШУ
+                    pygame.mixer.music.stop()
+                    if lose_sound:
                         lose_sound.play()
                         
                 for laser in lasers[:]:
@@ -224,10 +212,8 @@ def easy_level(music_vol, sfx_vol):
                         lasers.remove(laser)
                         asteroids.remove(asteroid)
                         score += 1
-                        
-                        if hit_sound:  # <--- ВІДТВОРЕННЯ ЗВУКУ ВЛУЧАННЯ
+                        if hit_sound:
                             hit_sound.play()
-                            
                         x = random.randint(50, WIDTH - 100)
                         y = random.randint(-800, -50)
                         rect = asteroid_image.get_rect(center=(x, y))
@@ -236,9 +222,8 @@ def easy_level(music_vol, sfx_vol):
 
             if score >= ASTEROIDS_TO_WIN:
                 victory = True
-                game_over = False
-                pygame.mixer.music.stop()  # <--- ЗУПИНКА ФОНОВОГО ЗВУКУ
-                if win_sound:  # <--- ВІДТВОРЕННЯ ЗВУКУ ПЕРЕМОГИ
+                pygame.mixer.music.stop()
+                if win_sound:
                     win_sound.play()
 
         # --- Малювання ---
@@ -283,5 +268,9 @@ def easy_level(music_vol, sfx_vol):
         pygame.display.flip()
         clock.tick(60)
 
-    pygame.mixer.music.stop()  # <--- ФІНАЛЬНА ЗУПИНКА МУЗИКИ ПРИ ВИХОДІ
+    pygame.mixer.music.stop()
     return level_passed
+if __name__ == "__main__":
+    pygame.init()
+    hard_level(0.5, 0.5)
+    pygame.quit()
