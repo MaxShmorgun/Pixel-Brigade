@@ -161,7 +161,7 @@ def hard_level(music_vol, sfx_vol):
     running = True
     while running:
         screen.blit(background_image, (0, 0)) if background_image else screen.fill((10, 10, 30))
-        draw_text("Третій рівень", 28, WHITE, WIDTH // 2, 30)
+        draw_text("Четвертий рівень", 28, WHITE, WIDTH // 2, 30)
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()[0]
 

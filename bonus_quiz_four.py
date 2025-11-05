@@ -183,6 +183,13 @@ def bonus_quiz(music_volume=0.5, sfx_volume=0.5):
     feedback_timer = 0
     pygame.mixer.music.set_volume(music_volume)
 
+        # --- Встановлюємо гучність для всіх звуків ---
+    if sound_correct: sound_correct.set_volume(sfx_volume)
+    if sound_wrong: sound_wrong.set_volume(sfx_volume)
+    if sound_win: sound_win.set_volume(sfx_volume)
+    if sound_lose: sound_lose.set_volume(sfx_volume)
+
+
     def draw_button_end_menu(text, x, y, width, height):
         mouse = pygame.mouse.get_pos()
         rect = pygame.Rect(x, y, width, height)

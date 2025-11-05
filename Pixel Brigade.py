@@ -102,7 +102,7 @@ show_settings = False
 # --- Прогрес ---
 DEFAULT_PROGRESS = {
     "level_1": True,
-    "level_2": False, # <--- Рівень 2 заблоковано на початку
+    "level_2": False,
     "level_3": False,
     "level_4": False,
     "level_5": False,

@@ -1,18 +1,18 @@
 {
     "level_progress": {
         "level_1": true,
-        "level_2": false,
-        "level_3": false,
-        "level_4": false,
-        "level_5": false,
-        "level_6": false,
-        "level_7": false,
-        "level_8": false,
-        "level_9": false,
-        "level_10": false
+        "level_2": true,
+        "level_3": true,
+        "level_4": true,
+        "level_5": true,
+        "level_6": true,
+        "level_7": true,
+        "level_8": true,
+        "level_9": true,
+        "level_10": true
     },
     "settings": {
-        "volume_music": 0.14,
-        "volume_sfx": 0.03666666666666667
+        "volume_music": 0.08333333333333333,
+        "volume_sfx": 0.0
     }
 }

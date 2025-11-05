@@ -188,7 +188,7 @@ def hard_level(music_vol, sfx_vol):
         else:
             screen.fill((10, 10, 30))
 
-        draw_text("Третій рівень", 28, WHITE, WIDTH // 2, 30)
+        draw_text("П'ятий рівень", 28, WHITE, WIDTH // 2, 30)
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()[0]
 

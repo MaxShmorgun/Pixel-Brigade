@@ -191,6 +191,12 @@ def bonus_quiz(music_volume=0.5, sfx_volume=0.5):
     feedback_timer = 0
     current = 0
     pygame.mixer.music.set_volume(music_volume)
+        # --- Встановлюємо гучність для всіх звуків ---
+    if sound_correct: sound_correct.set_volume(sfx_volume)
+    if sound_wrong: sound_wrong.set_volume(sfx_volume)
+    if sound_win: sound_win.set_volume(sfx_volume)
+    if sound_lose: sound_lose.set_volume(sfx_volume)
+
 
     def end_menu(win):
         if win and sound_win: sound_win.play()
@@ -241,7 +247,6 @@ def bonus_quiz(music_volume=0.5, sfx_volume=0.5):
                 current += 1
                 selected = None
                 if current >= len(questions):
-                    # ✅ Для перемоги потрібно 60 правильних із 70
                     win = score >= 60
                     end_menu(win)
                     return "exit"
