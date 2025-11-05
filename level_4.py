@@ -115,7 +115,7 @@ def hard_level(music_vol, sfx_vol):
 
     # --- Прогрес ---
     score = 0
-    ASTEROIDS_TO_WIN = 10  # 🟩 тепер 75 для перемоги
+    ASTEROIDS_TO_WIN = 75  # 🟩 тепер 75 для перемоги
     game_over = False
     victory = False
     level_passed = False
